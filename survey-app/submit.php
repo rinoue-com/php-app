@@ -1,14 +1,21 @@
 <?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // フォームから送信されたデータを取得
     $name = $_POST['name'];
+    $email = $_POST['email'];
     $age = $_POST['age'];
+    $prefecture = $_POST['prefecture'];
+    $travel_frequency = $_POST['travel_frequency'];
+    $planning_extent = $_POST['planning_extent'];
     $satisfaction = $_POST['satisfaction'];
     $feedback = $_POST['feedback'];
-    
+
+    // データをCSV形式で保存
     $file = fopen("responses.csv", "a");
-    fputcsv($file, [$name, $age, $satisfaction, $feedback]);
+    fputcsv($file, [$name, $email, $age, $prefecture, $travel_frequency, $planning_extent, $satisfaction, $feedback]);
     fclose($file);
-    
+
+    // フォーム送信後に表示するメッセージ
     echo "アンケートのご協力ありがとうございました！";
 }
 ?>
