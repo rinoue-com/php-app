@@ -8,7 +8,6 @@
     <script type="text/javascript">
         google.charts.load('current', {
             packages: ['corechart', 'geochart'],
-            mapsApiKey: 'YOUR_GOOGLE_MAPS_API_KEY'
         });
         google.charts.setOnLoadCallback(drawCharts);
 
@@ -238,13 +237,16 @@
                 <th>旅行計画</th>
                 <th>満足度</th>
                 <th>フィードバック</th>
+                <th>詳細</th>
             </tr>
             <?php
-            foreach ($pageData as $data) {
+            foreach ($pageData as $index => $data) {
                 echo "<tr>";
-                foreach ($data as $field) {
-                    echo "<td>" . htmlspecialchars($field) . "</td>";
+                foreach ($data as $key => $field) {
+                    echo "<td class='hidden'>" . htmlspecialchars($field) . "</td>";
                 }
+                // 詳細ボタンを追加
+                echo "<td><a href='detail.php?row=" . ($offset + $index) . "'>詳細</a></td>";
                 echo "</tr>";
             }
             ?>

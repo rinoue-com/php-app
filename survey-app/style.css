@@ -87,6 +87,13 @@ th {
     font-weight: bold;
 }
 
+td.hidden {
+    max-width: 150px; /* 列の最大幅を設定 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 #toggleButton, #downloadButton {
     background-color: #4CAF50;
     color: white;
@@ -145,4 +152,14 @@ th {
     color: white;
     font-weight: bold;
     border-color: #4CAF50;
+}
+
+/* 詳細コンテナのスタイル（detail.php用） */
+.detail-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 40px auto;
 }

@@ -16,6 +16,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     fclose($file);
 
     // フォーム送信後に表示するメッセージ
-    echo "アンケートのご協力ありがとうございました！";
+    echo "<h1>アンケートのご協力ありがとうございました！<h1><br>";
+
+    echo '<p style="font-size: medium">以下のリンクから集計画面を確認できます（デモ用）。</p>
+        <a href="result.php" style="font-size: medium">結果画面を表示</a>';
 }
 ?>
