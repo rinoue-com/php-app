@@ -13,7 +13,25 @@
         google.charts.setOnLoadCallback(drawCharts);
 
         <?php
-        // PHPでデータを読み込む
+        // ページングの設定
+        $rowsPerPage = 10; // 1ページに表示する行数
+        $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $offset = ($currentPage - 1) * $rowsPerPage;
+
+        // 全データを読み込み、該当ページのデータだけを表示
+        $allData = [];
+        if (($file = fopen("responses.csv", "r")) !== FALSE) {
+            fgetcsv($file); // ヘッダをスキップ
+            while (($data = fgetcsv($file)) !== FALSE) {
+                $allData[] = $data;
+            }
+            fclose($file);
+        }
+        $totalRows = count($allData);
+        $totalPages = ceil($totalRows / $rowsPerPage);
+        $pageData = array_slice($allData, $offset, $rowsPerPage);
+
+        // グラフ描画用データの初期化
         $satisfactionData = [
             "非常に満足" => 0,
             "満足" => 0,
@@ -38,28 +56,22 @@
 
         $prefectureData = [];
 
-        if (($file = fopen("responses.csv", "r")) !== FALSE) {
-            // ヘッダ行を読み飛ばす
-            fgetcsv($file);
+        foreach ($allData as $data) {
+            $satisfactionData[$data[6]]++;
+            $travelFrequencyData[$data[4]]++;
+            $planningExtentData[$data[5]]++;
 
-            while (($data = fgetcsv($file)) !== FALSE) {
-                $satisfactionData[$data[6]]++;
-                $travelFrequencyData[$data[4]]++;
-                $planningExtentData[$data[5]]++;
-
-                // 都道府県名から「都」「府」「県」を除去
-                $prefecture = str_replace(['都', '府', '県'], '', $data[3]);
-                if (array_key_exists($prefecture, $prefectureData)) {
-                    $prefectureData[$prefecture]++;
-                } else {
-                    $prefectureData[$prefecture] = 1;
-                }
+            // 都道府県名から「都」「府」「県」を除去
+            $prefecture = str_replace(['都', '府', '県'], '', $data[3]);
+            if (array_key_exists($prefecture, $prefectureData)) {
+                $prefectureData[$prefecture]++;
+            } else {
+                $prefectureData[$prefecture] = 1;
             }
-            fclose($file);
         }
         ?>
 
-        // グラフ描画関数
+        // グラフの描画関数
         function drawCharts() {
             drawSatisfactionChart('ColumnChart');
             drawTravelFrequencyChart('ColumnChart');
@@ -67,7 +79,6 @@
             drawPrefectureMap();
         }
 
-        // 満足度のグラフ描画
         function drawSatisfactionChart(chartType) {
             var data = google.visualization.arrayToDataTable([
                 ['満足度', '回答数'],
@@ -97,7 +108,6 @@
             chart.draw(data, options);
         }
 
-        // 旅行回数のグラフ描画
         function drawTravelFrequencyChart(chartType) {
             var data = google.visualization.arrayToDataTable([
                 ['旅行回数', '回答数'],
@@ -127,7 +137,6 @@
             chart.draw(data, options);
         }
 
-        // 旅行計画のグラフ描画
         function drawPlanningExtentChart(chartType) {
             var data = google.visualization.arrayToDataTable([
                 ['旅行計画', '回答数'],
@@ -157,7 +166,6 @@
             chart.draw(data, options);
         }
 
-        // 都道府県別の分布マップ描画
         function drawPrefectureMap() {
             var data = google.visualization.arrayToDataTable([
                 ['都道府県', '回答数'],
@@ -171,15 +179,13 @@
             var options = {
                 region: 'JP',
                 displayMode: 'regions',
-                resolution: 'provinces',
-                // colorAxis: {colors: ['#e7f0fa', '#08306b']}
+                resolution: 'provinces'
             };
 
             var chart = new google.visualization.GeoChart(document.getElementById('prefecture_map'));
             chart.draw(data, options);
         }
 
-        // グラフの種類を切り替える関数
         function toggleSatisfactionChart(type) {
             drawSatisfactionChart(type);
         }
@@ -192,7 +198,6 @@
             drawPlanningExtentChart(type);
         }
 
-        // 表の表示/非表示を切り替える関数
         function toggleTable() {
             var table = document.getElementById("dataTable");
             var button = document.getElementById("toggleButton");
@@ -204,6 +209,15 @@
                 button.textContent = "データを表示";
             }
         }
+
+        function downloadCSV() {
+            const link = document.createElement('a');
+            link.href = 'responses.csv';
+            link.download = 'responses.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     </script>
 </head>
 <body>
@@ -212,6 +226,8 @@
 
         <!-- 表の表示/非表示切り替えボタン -->
         <button id="toggleButton" onclick="toggleTable()">データを非表示</button>
+        <button id="downloadButton" onclick="downloadCSV()">CSVダウンロード</button>
+
         <table id="dataTable" border="1">
             <tr>
                 <th>名前</th>
@@ -224,21 +240,26 @@
                 <th>フィードバック</th>
             </tr>
             <?php
-            if (($file = fopen("responses.csv", "r")) !== FALSE) {
-                // ヘッダ行を読み飛ばす
-                fgetcsv($file);
-
-                while (($data = fgetcsv($file)) !== FALSE) {
-                    echo "<tr>";
-                    foreach ($data as $field) {
-                        echo "<td>" . htmlspecialchars($field) . "</td>";
-                    }
-                    echo "</tr>";
+            foreach ($pageData as $data) {
+                echo "<tr>";
+                foreach ($data as $field) {
+                    echo "<td>" . htmlspecialchars($field) . "</td>";
                 }
-                fclose($file);
+                echo "</tr>";
             }
             ?>
         </table>
+
+        <!-- ページングのリンク -->
+        <div class="pagination">
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <?php if ($i == $currentPage): ?>
+                    <span class="current-page"><?php echo $i; ?></span>
+                <?php else: ?>
+                    <a href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                <?php endif; ?>
+            <?php endfor; ?>
+        </div>
 
         <h2>満足度の分布</h2>
         <button id="satisfactionColumn" class="chart-toggle-btn active" onclick="toggleSatisfactionChart('ColumnChart')">棒グラフ</button>
