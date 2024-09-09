@@ -37,6 +37,9 @@ if (!$place) {
     echo 'データが見つかりません。';
     exit;
 }
+
+// 位置情報が登録されているか確認
+$hasLocation = !empty($place['latitude']) && !empty($place['longitude']);
 ?>
 
 <!DOCTYPE html>
@@ -45,7 +48,9 @@ if (!$place) {
     <meta charset="UTF-8">
     <title><?php echo htmlspecialchars($place['place_name'], ENT_QUOTES, 'UTF-8'); ?>の詳細</title>
     <link rel="stylesheet" href="style.css"> <!-- CSSの読み込み -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=<?php echo $google_maps_api_key; ?>"></script> <!-- Google Maps API -->
+    <?php if ($hasLocation): ?>
+        <script src="https://maps.googleapis.com/maps/api/js?key=<?php echo $google_maps_api_key; ?>"></script> <!-- Google Maps API -->
+    <?php endif; ?>
 </head>
 <body>
     <h1><?php echo htmlspecialchars($place['place_name'], ENT_QUOTES, 'UTF-8'); ?>の詳細</h1>
@@ -53,11 +58,15 @@ if (!$place) {
         <p>場所の名前: <?php echo htmlspecialchars($place['place_name'], ENT_QUOTES, 'UTF-8'); ?></p>
         <p>位置: <?php echo htmlspecialchars($place['location'], ENT_QUOTES, 'UTF-8'); ?></p>
 
-        <!-- 位置情報マップ表示 -->
-        <div id="map"></div>
+        <!-- 位置情報マップ表示 or 「登録無し」表示 -->
+        <?php if ($hasLocation): ?>
+            <div id="map"></div>
+            <p>緯度: <?php echo htmlspecialchars($place['latitude'], ENT_QUOTES, 'UTF-8'); ?></p>
+            <p>経度: <?php echo htmlspecialchars($place['longitude'], ENT_QUOTES, 'UTF-8'); ?></p>
+        <?php else: ?>
+            <p>位置情報: 登録無し</p>
+        <?php endif; ?>
 
-        <p>緯度: <?php echo htmlspecialchars($place['latitude'], ENT_QUOTES, 'UTF-8'); ?></p>
-        <p>経度: <?php echo htmlspecialchars($place['longitude'], ENT_QUOTES, 'UTF-8'); ?></p>
         <p>開催期間: 
             <?php
             if ($place['start_date'] && $place['end_date']) {
@@ -78,29 +87,31 @@ if (!$place) {
         <a href="list.php">一覧に戻る</a>
     </div>
 
-    <!-- マップ表示用スクリプト -->
-    <script>
-        function initMap() {
-            var lat = <?php echo $place['latitude']; ?>;
-            var lng = <?php echo $place['longitude']; ?>;
-            var location = { lat: lat, lng: lng };
+    <!-- マップ表示用スクリプト (位置情報がある場合のみ) -->
+    <?php if ($hasLocation): ?>
+        <script>
+            function initMap() {
+                var lat = <?php echo $place['latitude']; ?>;
+                var lng = <?php echo $place['longitude']; ?>;
+                var location = { lat: lat, lng: lng };
 
-            var map = new google.maps.Map(document.getElementById("map"), {
-                center: location,
-                zoom: 15
-            });
+                var map = new google.maps.Map(document.getElementById("map"), {
+                    center: location,
+                    zoom: 15
+                });
 
-            var marker = new google.maps.Marker({
-                position: location,
-                map: map,
-                title: "<?php echo htmlspecialchars($place['place_name'], ENT_QUOTES, 'UTF-8'); ?>"
-            });
-        }
+                var marker = new google.maps.Marker({
+                    position: location,
+                    map: map,
+                    title: "<?php echo htmlspecialchars($place['place_name'], ENT_QUOTES, 'UTF-8'); ?>"
+                });
+            }
 
-        // Google Mapsの初期化
-        window.onload = function() {
-            initMap();
-        };
-    </script>
+            // Google Mapsの初期化
+            window.onload = function() {
+                initMap();
+            };
+        </script>
+    <?php endif; ?>
 </body>
 </html>
