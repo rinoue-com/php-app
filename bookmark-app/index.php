@@ -80,50 +80,66 @@ include 'config.php';
                 anchorPoint: new google.maps.Point(0, -29)
             });
 
-            // 場所が選択された場合の処理
             autocomplete.addListener("place_changed", function() {
+                marker.setVisible(false);
                 const place = autocomplete.getPlace();
+
                 if (!place.geometry) {
                     return;
                 }
 
-                updateMapAndMarker(place);
-            });
-
-            // エンターキーが押された場合、最上位の候補を選択する処理
-            document.getElementById("location_input").addEventListener("keydown", function(event) {
-                if (event.key === "Enter" && !event.isComposing) { // 日本語変換中でないとき
-                    event.preventDefault(); // デフォルトのエンター動作をキャンセル
-
-                    // Autocompleteの最上位候補を強制的に選択
-                    const firstResult = document.querySelector(".pac-container .pac-item");
-                    if (firstResult) {
-                        firstResult.click(); // 最上位の候補をクリック
-                    }
+                if (place.geometry.viewport) {
+                    map.fitBounds(place.geometry.viewport);
+                } else {
+                    map.setCenter(place.geometry.location);
+                    map.setZoom(17);
                 }
+
+                marker.setPosition(place.geometry.location);
+                marker.setVisible(true);
+
+                // 場所の名前のみ取得（住所は含まない）
+                const placeName = place.name;
+                document.getElementById('location_input').value = placeName;
+
+                // 緯度・経度を表示
+                document.getElementById("lat_val").innerText = place.geometry.location.lat();
+                document.getElementById("lng_val").innerText = place.geometry.location.lng();
             });
         }
 
-        // 地図とマーカーを更新する関数
-        function updateMapAndMarker(place) {
-            if (place.geometry.viewport) {
-                map.fitBounds(place.geometry.viewport);
+        // 未定が選択された場合の処理
+        const undecidedCheckbox = document.getElementById('undecided');
+        const startDateInput = document.getElementById('start_date');
+        const endDateInput = document.getElementById('end_date');
+
+        undecidedCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                startDateInput.disabled = true;
+                endDateInput.disabled = true;
+                startDateInput.value = ''; // 選択解除
+                endDateInput.value = ''; // 選択解除
             } else {
-                map.setCenter(place.geometry.location);
-                map.setZoom(17);
+                startDateInput.disabled = false;
+                endDateInput.disabled = false;
             }
+        });
 
-            marker.setPosition(place.geometry.location);
-            marker.setVisible(true);
+        // 訪問済みフラグがONのときのみ訪問日を選択可能にする
+        const visitedFlagCheckbox = document.getElementById('visited_flag');
+        const visitedDateInput = document.getElementById('visited_date');
 
-            // 場所の名前のみ取得（住所は含まない）
-            const placeName = place.name;
-            document.getElementById('location_input').value = placeName;
+        visitedFlagCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                visitedDateInput.disabled = false;
+            } else {
+                visitedDateInput.disabled = true;
+                visitedDateInput.value = ''; // 選択解除
+            }
+        });
 
-            // 緯度・経度を表示
-            document.getElementById("lat_val").innerText = place.geometry.location.lat();
-            document.getElementById("lng_val").innerText = place.geometry.location.lng();
-        }
+        // ページ読み込み時に訪問日をデフォルトで無効化
+        visitedDateInput.disabled = true;
 
         // Google Maps APIの読み込み
         const script = document.createElement('script');

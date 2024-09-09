@@ -1,8 +1,4 @@
-
 <?php
-//エラー表示
-ini_set("display_errors", 1);
-
 // DB接続
 $host = 'localhost';
 $user = 'root';
@@ -28,6 +24,7 @@ $places = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <title>行きたい場所一覧</title>
+    <link rel="stylesheet" href="style.css"> <!-- CSSの読み込み -->
 </head>
 <body>
     <h1>行きたい場所一覧</h1>
