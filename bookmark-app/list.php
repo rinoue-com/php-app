@@ -1,17 +1,6 @@
 <?php
-// DB接続
-$host = 'localhost';
-$user = 'root';
-$password = '';
-$dbname = 'travel_memo_db';
-$dsn = "mysql:host=$host;dbname=$dbname;charset=utf8";
-
-try {
-    $pdo = new PDO($dsn, $user, $password);
-} catch (PDOException $e) {
-    echo 'Connection failed: ' . $e->getMessage();
-    exit;
-}
+// config_db.phpをインクルードして、データベース接続情報を取得
+include 'config_db.php';
 
 // 検索キーワードとフィルタの取得
 $searchKeyword = isset($_GET['search']) ? $_GET['search'] : '';
@@ -44,7 +33,7 @@ if ($showPastEvents == 0) {
     $sql .= ' AND (end_date IS NULL OR end_date >= NOW())';
 }
 
-// 開始日の範囲フィルタ
+// 開始日の範囲フィルタ（指定された日付以前の開始日を取得）
 if (!empty($startDateRange)) {
     $sql .= ' AND start_date <= :start_date_range';
 }

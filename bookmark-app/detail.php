@@ -4,19 +4,8 @@ include 'config.php';
 ?>
 
 <?php
-// DB接続
-$host = 'localhost';
-$user = 'root';
-$password = '';
-$dbname = 'travel_memo_db';
-$dsn = "mysql:host=$host;dbname=$dbname;charset=utf8";
-
-try {
-    $pdo = new PDO($dsn, $user, $password);
-} catch (PDOException $e) {
-    echo 'Connection failed: ' . $e->getMessage();
-    exit;
-}
+// config_db.phpをインクルードして、データベース接続情報を取得
+include 'config_db.php';
 
 // GETパラメータからIDを取得
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
