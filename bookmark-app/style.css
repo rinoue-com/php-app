@@ -164,3 +164,41 @@ table tr:hover {
 .detail-page a:hover {
     background-color: #45a049;
 }
+
+/* 検索フォームのコンテナを50%の幅に設定 */
+.search-container {
+    width: 50%;
+    margin-bottom: 20px;
+}
+
+/* 検索フォームのスタイル */
+.search-form {
+    display: flex; /* 横並びに */
+    justify-content: flex-start; /* 左寄せ */
+}
+
+/* 検索入力欄のスタイル */
+.search-input {
+    width: 80%; /* ボタンとのバランスをとるため、80%の幅に設定 */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    margin-right: 10px; /* ボタンとの間に余白 */
+}
+
+/* 検索ボタンのスタイル */
+.search-button {
+    width: 18%; /* 入力欄とバランスをとるため、18%の幅に設定 */
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: #45a049;
+}
