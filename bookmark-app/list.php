@@ -2,6 +2,17 @@
 // config_db.phpをインクルードして、データベース接続情報を取得
 include 'config_db.php';
 
+// 削除処理
+if (isset($_GET['delete'])) {
+    $deleteId = (int)$_GET['delete'];
+    $deleteSql = "DELETE FROM memo_places WHERE id = :id";
+    $deleteStmt = $pdo->prepare($deleteSql);
+    $deleteStmt->bindValue(':id', $deleteId, PDO::PARAM_INT);
+    $deleteStmt->execute();
+    header("Location: list.php"); // 削除後にリダイレクトしてページを更新
+    exit;
+}
+
 // 検索キーワードとフィルタの取得
 $searchKeyword = isset($_GET['search']) ? $_GET['search'] : '';
 $showUndecided = isset($_GET['undecided']) ? 1 : 0;
@@ -103,6 +114,7 @@ $places = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <th>訪問済み</th>
             <th>参考URL</th>
             <th>詳細</th>
+            <th>削除</th>
         </tr>
         <?php if (!empty($places)): ?>
             <?php foreach ($places as $place): ?>
@@ -138,11 +150,12 @@ $places = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php endif; ?>
                 </td>
                 <td><a href="detail.php?id=<?php echo $place['id']; ?>">詳細を見る</a></td>
+                <td><a href="list.php?delete=<?php echo $place['id']; ?>" onclick="return confirm('本当に削除しますか？')">削除</a></td>
             </tr>
             <?php endforeach; ?>
         <?php else: ?>
             <tr>
-                <td colspan="7">検索結果が見つかりませんでした。</td>
+                <td colspan="8">検索結果が見つかりませんでした。</td>
             </tr>
         <?php endif; ?>
     </table>

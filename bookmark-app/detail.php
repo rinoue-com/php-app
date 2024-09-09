@@ -1,9 +1,7 @@
 <?php
 // config.phpをインクルードしてAPIキーを取得
 include 'config.php';
-?>
 
-<?php
 // config_db.phpをインクルードして、データベース接続情報を取得
 include 'config_db.php';
 
@@ -12,6 +10,16 @@ $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 if ($id <= 0) {
     echo '無効なIDです。';
+    exit;
+}
+
+// 削除処理
+if (isset($_GET['delete'])) {
+    $deleteSql = "DELETE FROM memo_places WHERE id = :id";
+    $deleteStmt = $pdo->prepare($deleteSql);
+    $deleteStmt->bindValue(':id', $id, PDO::PARAM_INT);
+    $deleteStmt->execute();
+    header("Location: list.php"); // 削除後にリスト画面へリダイレクト
     exit;
 }
 
@@ -72,6 +80,10 @@ $hasLocation = !empty($place['latitude']) && !empty($place['longitude']);
             <?php echo $place['visited_date'] ? htmlspecialchars($place['visited_date'], ENT_QUOTES, 'UTF-8') : '未訪問'; ?>
         </p>
         <p>登録日時: <?php echo htmlspecialchars($place['created_at'], ENT_QUOTES, 'UTF-8'); ?></p>
+
+        <!-- 削除ボタンの追加 -->
+        <p><a href="detail.php?id=<?php echo $id; ?>&delete=1" onclick="return confirm('本当に削除しますか？')">このイベントを削除</a></p>
+
         <a href="list.php">一覧に戻る</a>
     </div>
 
