@@ -14,7 +14,7 @@ include 'config.php';
 
 <body>
     <h1>行きたい場所を登録する</h1>
-    <form action="register.php" method="POST">
+    <form action="register.php" method="POST" id="registerForm"> <!-- 登録処理ファイルを指定 -->
         <label for="place_name">場所やイベントの名前:</label>
         <input type="text" id="place_name" name="place_name" required><br><br>
 
@@ -36,12 +36,12 @@ include 'config.php';
 
         <div class="datetime-group">
             <div>
-                <label for="start_date">開始日時:</label>
-                <input type="datetime-local" id="start_date" name="start_date"><br><br>
+                <label for="start_date">開始日:</label>
+                <input type="date" id="start_date" name="start_date"><br><br> <!-- 日付入力 -->
             </div>
             <div>
-                <label for="end_date">終了日時:</label>
-                <input type="datetime-local" id="end_date" name="end_date"><br><br>
+                <label for="end_date">終了日:</label>
+                <input type="date" id="end_date" name="end_date"><br><br> <!-- 日付入力 -->
             </div>
         </div>
 
@@ -49,7 +49,7 @@ include 'config.php';
         <input type="checkbox" id="visited_flag" name="visited_flag" value="1"><br><br>
 
         <label for="visited_date">訪問日:</label>
-        <input type="date" id="visited_date" name="visited_date"><br><br>
+        <input type="date" id="visited_date" name="visited_date"><br><br> <!-- 日付入力 -->
 
         <label for="related_url">関連URL:</label>
         <input type="url" id="related_url" name="related_url"><br><br>
@@ -65,10 +65,7 @@ include 'config.php';
 
         function initMap() {
             map = new google.maps.Map(document.getElementById("map"), {
-                center: {
-                    lat: 35.6804,
-                    lng: 139.7690
-                }, // 東京の位置
+                center: { lat: 35.6804, lng: 139.7690 }, // 東京の位置
                 zoom: 13
             });
 
@@ -99,8 +96,20 @@ include 'config.php';
                 marker.setVisible(true);
 
                 // 場所の名前のみ取得（住所は含まない）
-                const placeName = place.name;
+                let placeName = place.name || ''; // name がない場合の対応
+                if (!placeName) {
+                    // place.name が存在しない場合は types に基づいて最適な候補を取得
+                    placeName = (place.types.includes('establishment') || place.types.includes('point_of_interest')) 
+                                ? place.address_components[0].long_name : place.formatted_address.split(',')[0];
+                }
+
                 document.getElementById('location_input').value = placeName;
+
+                // 緯度・経度、place_id、場所名を取得して非表示フィールドに設定
+                document.getElementById('latitude').value = place.geometry.location.lat();
+                document.getElementById('longitude').value = place.geometry.location.lng();
+                document.getElementById('place_id').value = place.place_id || ''; // 場所IDがない場合は空に
+                document.getElementById('location').value = placeName; // 場所名をセット
 
                 // 緯度・経度を表示
                 document.getElementById("lat_val").innerText = place.geometry.location.lat();
@@ -140,6 +149,13 @@ include 'config.php';
 
         // ページ読み込み時に訪問日をデフォルトで無効化
         visitedDateInput.disabled = true;
+
+        // エンターキーでの送信を無効化する処理
+        document.getElementById('registerForm').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && event.target.tagName !== 'TEXTAREA') {
+                event.preventDefault(); // フォームの送信を無効化
+            }
+        });
 
         // Google Maps APIの読み込み
         const script = document.createElement('script');

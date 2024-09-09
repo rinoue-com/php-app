@@ -50,9 +50,9 @@ $hasLocation = !empty($place['latitude']) && !empty($place['longitude']);
     <?php endif; ?>
 </head>
 <body>
-    <h1><?php echo htmlspecialchars($place['place_name'], ENT_QUOTES, 'UTF-8'); ?>の詳細</h1>
+    <h1>「<?php echo htmlspecialchars($place['place_name'], ENT_QUOTES, 'UTF-8'); ?>」の詳細</h1>
     <div class="detail-page">
-        <p>場所の名前: <?php echo htmlspecialchars($place['place_name'], ENT_QUOTES, 'UTF-8'); ?></p>
+        <p>イベントの名前: <?php echo htmlspecialchars($place['place_name'], ENT_QUOTES, 'UTF-8'); ?></p>
         <p>位置: <?php echo htmlspecialchars($place['location'], ENT_QUOTES, 'UTF-8'); ?></p>
 
         <!-- 位置情報マップ表示 or 「登録無し」表示 -->
