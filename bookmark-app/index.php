@@ -9,7 +9,7 @@ if (isset($_GET['delete'])) {
     $deleteStmt = $pdo->prepare($deleteSql);
     $deleteStmt->bindValue(':id', $deleteId, PDO::PARAM_INT);
     $deleteStmt->execute();
-    header("Location: list.php"); // 削除後にリダイレクトしてページを更新
+    header("Location: index.php"); // 削除後にリダイレクトしてページを更新
     exit;
 }
 
@@ -22,7 +22,7 @@ $startDateRange = isset($_GET['start_date_range']) ? $_GET['start_date_range'] :
 
 // クリアボタンが押された場合、検索文字列をリセット
 if (isset($_GET['clear'])) {
-    header("Location: list.php"); // クエリパラメータを削除してリダイレクト
+    header("Location: index.php"); // クエリパラメータを削除してリダイレクト
     exit;
 }
 
@@ -75,7 +75,7 @@ $places = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="search-filter-container">
         <!-- 検索フォーム -->
         <div class="search-container">
-            <form method="GET" action="list.php" class="search-form">
+            <form method="GET" action="index.php" class="search-form">
                 <input type="text" name="search" placeholder="イベント名や場所名で検索" value="<?php echo htmlspecialchars($searchKeyword, ENT_QUOTES, 'UTF-8'); ?>" class="search-input">
                 <div class="search-buttons">
                     <button type="submit" class="search-button">検索</button>
@@ -86,7 +86,7 @@ $places = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         <!-- フィルタオプション -->
         <div class="filter-container">
-            <form method="GET" action="list.php">
+            <form method="GET" action="index.php">
                 <label>
                     <input type="checkbox" name="undecided" <?php echo $showUndecided ? 'checked' : ''; ?>> 未定
                 </label>
@@ -154,7 +154,7 @@ $places = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php endif; ?>
                 </td>
                 <td><a href="detail.php?id=<?php echo $place['id']; ?>">詳細を見る</a></td>
-                <td><a href="list.php?delete=<?php echo $place['id']; ?>" onclick="return confirm('本当に削除しますか？')">削除</a></td>
+                <td><a href="index.php?delete=<?php echo $place['id']; ?>" onclick="return confirm('本当に削除しますか？')">削除</a></td>
             </tr>
             <?php endforeach; ?>
         <?php else: ?>

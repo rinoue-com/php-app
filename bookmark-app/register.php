@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // データを実行して保存
     if ($stmt->execute()) {
         echo 'データが正常に登録されました。<br>';
-        echo '<a href="list.php">一覧ページに戻る</a>';  // 成功時のリンク
+        echo '<a href="index.php">一覧ページに戻る</a>';  // 成功時のリンク
     } else {
         echo 'データの登録に失敗しました。<br>';
         echo '<a href="register.php">登録画面に戻る</a>';  // 失敗時のリンク
