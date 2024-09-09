@@ -28,7 +28,7 @@
 
 ## ③DEMO
 
-データ一覧画面：http://localhost/php-app/bookmark-app/
+データ一覧画面：https://tech-ryu.sakura.ne.jp/bookmark-app
 
 ## ④作ったアプリケーション用のIDまたはPasswordがある場合
 
