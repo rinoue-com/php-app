@@ -2,3 +2,4 @@
 /survey-app/vendor
 bookmark-app/config.php
 bookmark-app/config_db.php
+bookmark-app/config_db_local.php
