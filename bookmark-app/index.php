@@ -1,168 +1,167 @@
 <?php
-// config.phpをインクルードしてAPIキーを取得
-include 'config.php';
+// config_db.phpをインクルードして、データベース接続情報を取得
+include 'config_db.php';
+
+// 削除処理
+if (isset($_GET['delete'])) {
+    $deleteId = (int)$_GET['delete'];
+    $deleteSql = "DELETE FROM memo_places WHERE id = :id";
+    $deleteStmt = $pdo->prepare($deleteSql);
+    $deleteStmt->bindValue(':id', $deleteId, PDO::PARAM_INT);
+    $deleteStmt->execute();
+    header("Location: list.php"); // 削除後にリダイレクトしてページを更新
+    exit;
+}
+
+// 検索キーワードとフィルタの取得
+$searchKeyword = isset($_GET['search']) ? $_GET['search'] : '';
+$showUndecided = isset($_GET['undecided']) ? 1 : 0;
+$showVisited = isset($_GET['visited']) ? 1 : 0;
+$showPastEvents = isset($_GET['past_events']) ? 1 : 0;
+$startDateRange = isset($_GET['start_date_range']) ? $_GET['start_date_range'] : '';
+
+// クリアボタンが押された場合、検索文字列をリセット
+if (isset($_GET['clear'])) {
+    header("Location: list.php"); // クエリパラメータを削除してリダイレクト
+    exit;
+}
+
+// SQLクエリの準備
+$sql = 'SELECT id, place_name, location, start_date, end_date, undecided, visited_flag, related_url FROM memo_places WHERE (place_name LIKE :search OR location LIKE :search)';
+
+// 未定のものを除外するフィルタ
+if ($showUndecided == 0) {
+    $sql .= ' AND undecided = 0';
+}
+
+// 訪問済みフィルタ
+if ($showVisited == 1) {
+    $sql .= ' AND visited_flag = 1';
+}
+
+// 過去のイベントフィルタ
+if ($showPastEvents == 0) {
+    $sql .= ' AND (end_date IS NULL OR end_date >= NOW())';
+}
+
+// 開始日の範囲フィルタ（指定された日付以前の開始日を取得）
+if (!empty($startDateRange)) {
+    $sql .= ' AND start_date <= :start_date_range';
+}
+
+$stmt = $pdo->prepare($sql);
+$searchParam = '%' . $searchKeyword . '%';
+$stmt->bindValue(':search', $searchParam, PDO::PARAM_STR);
+
+if (!empty($startDateRange)) {
+    $stmt->bindValue(':start_date_range', $startDateRange, PDO::PARAM_STR);
+}
+
+// SQL実行
+$stmt->execute();
+$places = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>行きたい場所の登録フォーム</title>
-    <link rel="stylesheet" href="style.css"> <!-- 外部CSSファイルを読み込む -->
+    <title>行きたい場所一覧</title>
+    <link rel="stylesheet" href="style.css"> <!-- CSSの読み込み -->
 </head>
-
 <body>
-    <h1>行きたい場所を登録する</h1>
-    <form action="register.php" method="POST" id="registerForm"> <!-- 登録処理ファイルを指定 -->
-        <label for="place_name">場所やイベントの名前:</label>
-        <input type="text" id="place_name" name="place_name" required><br><br>
+    <h1>行きたい場所一覧</h1>
 
-        <label for="location">場所検索:</label>
-        <input type="text" id="location_input" placeholder="場所を検索"><br><br>
-
-        <div id="map"></div><br>
-
-        <!-- 緯度・経度・place_id を送信するための非表示フィールド -->
-        <input type="hidden" id="latitude" name="latitude">
-        <input type="hidden" id="longitude" name="longitude">
-        <input type="hidden" id="place_id" name="place_id">
-        <input type="hidden" id="location" name="location"> <!-- 一意の場所名 -->
-
-        <div id="coordinates">緯度: <span id="lat_val"></span>, 経度: <span id="lng_val"></span></div>
-
-        <label for="undecided">開催期間:</label>
-        <input type="checkbox" id="undecided" name="undecided" value="1"> 未定<br><br>
-
-        <div class="datetime-group">
-            <div>
-                <label for="start_date">開始日:</label>
-                <input type="date" id="start_date" name="start_date"><br><br> <!-- 日付入力 -->
-            </div>
-            <div>
-                <label for="end_date">終了日:</label>
-                <input type="date" id="end_date" name="end_date"><br><br> <!-- 日付入力 -->
-            </div>
+    <div class="search-filter-container">
+        <!-- 検索フォーム -->
+        <div class="search-container">
+            <form method="GET" action="list.php" class="search-form">
+                <input type="text" name="search" placeholder="イベント名や場所名で検索" value="<?php echo htmlspecialchars($searchKeyword, ENT_QUOTES, 'UTF-8'); ?>" class="search-input">
+                <div class="search-buttons">
+                    <button type="submit" class="search-button">検索</button>
+                    <button type="submit" name="clear" value="1" class="clear-button">クリア</button>
+                </div>
+            </form>
         </div>
 
-        <label for="visited_flag">訪問済み:</label>
-        <input type="checkbox" id="visited_flag" name="visited_flag" value="1"><br><br>
+        <!-- フィルタオプション -->
+        <div class="filter-container">
+            <form method="GET" action="list.php">
+                <label>
+                    <input type="checkbox" name="undecided" <?php echo $showUndecided ? 'checked' : ''; ?>> 未定
+                </label>
+                <label>
+                    <input type="checkbox" name="visited" <?php echo $showVisited ? 'checked' : ''; ?>> 訪問済み
+                </label>
+                <label>
+                    <input type="checkbox" name="past_events" <?php echo $showPastEvents ? 'checked' : ''; ?>> 過去のイベント
+                </label>
+                <label>
+                    開始日の範囲:
+                    <input type="date" name="start_date_range" value="<?php echo htmlspecialchars($startDateRange, ENT_QUOTES, 'UTF-8'); ?>">
+                </label>
+                <button type="submit" class="filter-button">フィルタ適用</button>
+            </form>
+        </div>
+    </div>
 
-        <label for="visited_date">訪問日:</label>
-        <input type="date" id="visited_date" name="visited_date"><br><br> <!-- 日付入力 -->
+    <div style="margin-bottom: 20px;">
+        <a href="create.php" class="btn btn-primary">新規追加</a> <!-- 登録画面へのリンク -->
+    </div>
 
-        <label for="related_url">関連URL:</label>
-        <input type="url" id="related_url" name="related_url"><br><br>
-
-        <label for="memo">メモ:</label>
-        <textarea id="memo" name="memo"></textarea><br><br>
-
-        <button type="submit">登録</button>
-    </form>
-
-    <script>
-        let map, marker, autocomplete;
-
-        function initMap() {
-            map = new google.maps.Map(document.getElementById("map"), {
-                center: { lat: 35.6804, lng: 139.7690 }, // 東京の位置
-                zoom: 13
-            });
-
-            autocomplete = new google.maps.places.Autocomplete(document.getElementById("location_input"));
-            autocomplete.bindTo("bounds", map);
-
-            marker = new google.maps.Marker({
-                map: map,
-                anchorPoint: new google.maps.Point(0, -29)
-            });
-
-            autocomplete.addListener("place_changed", function() {
-                marker.setVisible(false);
-                const place = autocomplete.getPlace();
-
-                if (!place.geometry) {
-                    return;
-                }
-
-                if (place.geometry.viewport) {
-                    map.fitBounds(place.geometry.viewport);
-                } else {
-                    map.setCenter(place.geometry.location);
-                    map.setZoom(17);
-                }
-
-                marker.setPosition(place.geometry.location);
-                marker.setVisible(true);
-
-                // 場所の名前のみ取得（住所は含まない）
-                let placeName = place.name || ''; // name がない場合の対応
-                if (!placeName) {
-                    // place.name が存在しない場合は types に基づいて最適な候補を取得
-                    placeName = (place.types.includes('establishment') || place.types.includes('point_of_interest')) 
-                                ? place.address_components[0].long_name : place.formatted_address.split(',')[0];
-                }
-
-                document.getElementById('location_input').value = placeName;
-
-                // 緯度・経度、place_id、場所名を取得して非表示フィールドに設定
-                document.getElementById('latitude').value = place.geometry.location.lat();
-                document.getElementById('longitude').value = place.geometry.location.lng();
-                document.getElementById('place_id').value = place.place_id || ''; // 場所IDがない場合は空に
-                document.getElementById('location').value = placeName; // 場所名をセット
-
-                // 緯度・経度を表示
-                document.getElementById("lat_val").innerText = place.geometry.location.lat();
-                document.getElementById("lng_val").innerText = place.geometry.location.lng();
-            });
-        }
-
-        // 未定が選択された場合の処理
-        const undecidedCheckbox = document.getElementById('undecided');
-        const startDateInput = document.getElementById('start_date');
-        const endDateInput = document.getElementById('end_date');
-
-        undecidedCheckbox.addEventListener('change', function() {
-            if (this.checked) {
-                startDateInput.disabled = true;
-                endDateInput.disabled = true;
-                startDateInput.value = ''; // 選択解除
-                endDateInput.value = ''; // 選択解除
-            } else {
-                startDateInput.disabled = false;
-                endDateInput.disabled = false;
-            }
-        });
-
-        // 訪問済みフラグがONのときのみ訪問日を選択可能にする
-        const visitedFlagCheckbox = document.getElementById('visited_flag');
-        const visitedDateInput = document.getElementById('visited_date');
-
-        visitedFlagCheckbox.addEventListener('change', function() {
-            if (this.checked) {
-                visitedDateInput.disabled = false;
-            } else {
-                visitedDateInput.disabled = true;
-                visitedDateInput.value = ''; // 選択解除
-            }
-        });
-
-        // ページ読み込み時に訪問日をデフォルトで無効化
-        visitedDateInput.disabled = true;
-
-        // エンターキーでの送信を無効化する処理
-        document.getElementById('registerForm').addEventListener('keydown', function(event) {
-            if (event.key === 'Enter' && event.target.tagName !== 'TEXTAREA') {
-                event.preventDefault(); // フォームの送信を無効化
-            }
-        });
-
-        // Google Maps APIの読み込み
-        const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=<?php echo $google_maps_api_key; ?>&libraries=places&callback=initMap`;
-        script.defer = true;
-        document.head.appendChild(script);
-    </script>
+    <table border="1">
+        <tr>
+            <th>イベントの名前</th>
+            <th>場所の名前</th>
+            <th>開始日</th>
+            <th>終了日</th>
+            <th>訪問済み</th>
+            <th>参考URL</th>
+            <th>詳細</th>
+            <th>削除</th>
+        </tr>
+        <?php if (!empty($places)): ?>
+            <?php foreach ($places as $place): ?>
+            <tr>
+                <td><?php echo htmlspecialchars($place['place_name'], ENT_QUOTES, 'UTF-8'); ?></td>
+                <td><?php echo htmlspecialchars($place['location'], ENT_QUOTES, 'UTF-8'); ?></td>
+                <td>
+                    <?php
+                    if ($place['undecided'] == 1) {
+                        echo '未定';
+                    } elseif ($place['start_date']) {
+                        echo htmlspecialchars(date('Y-m-d', strtotime($place['start_date'])), ENT_QUOTES, 'UTF-8');
+                    } else {
+                        echo '未定';
+                    }
+                    ?>
+                </td>
+                <td>
+                    <?php
+                    if ($place['undecided'] == 1) {
+                        echo '未定';
+                    } elseif ($place['end_date']) {
+                        echo htmlspecialchars(date('Y-m-d', strtotime($place['end_date'])), ENT_QUOTES, 'UTF-8');
+                    } else {
+                        echo '未定';
+                    }
+                    ?>
+                </td>
+                <td><?php echo $place['visited_flag'] == 1 ? '済' : ''; ?></td>
+                <td>
+                    <?php if (!empty($place['related_url'])): ?>
+                        <a href="<?php echo htmlspecialchars($place['related_url'], ENT_QUOTES, 'UTF-8'); ?>" target="_blank">リンク</a>
+                    <?php endif; ?>
+                </td>
+                <td><a href="detail.php?id=<?php echo $place['id']; ?>">詳細を見る</a></td>
+                <td><a href="list.php?delete=<?php echo $place['id']; ?>" onclick="return confirm('本当に削除しますか？')">削除</a></td>
+            </tr>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="8">検索結果が見つかりませんでした。</td>
+            </tr>
+        <?php endif; ?>
+    </table>
 </body>
-
 </html>
