@@ -67,16 +67,15 @@ $hasLocation = !empty($place['latitude']) && !empty($place['longitude']);
             <p>位置情報: 登録無し</p>
         <?php endif; ?>
 
+        <!-- 開催期間の表示 -->
         <p>開催期間: 
-            <?php
-            if ($place['start_date'] && $place['end_date']) {
-                echo htmlspecialchars($place['start_date'], ENT_QUOTES, 'UTF-8') . ' ～ ' .
-                     htmlspecialchars($place['end_date'], ENT_QUOTES, 'UTF-8');
-            } else {
-                echo '未定';
-            }
-            ?>
+            <?php if ($place['undecided'] == 1): ?>
+                未定
+            <?php else: ?>
+                <?php echo htmlspecialchars($place['start_date'], ENT_QUOTES, 'UTF-8'); ?> ～ <?php echo htmlspecialchars($place['end_date'], ENT_QUOTES, 'UTF-8'); ?>
+            <?php endif; ?>
         </p>
+
         <p>関連URL: <a href="<?php echo htmlspecialchars($place['related_url'], ENT_QUOTES, 'UTF-8'); ?>" target="_blank"><?php echo htmlspecialchars($place['related_url'], ENT_QUOTES, 'UTF-8'); ?></a></p>
         <p>メモ: <?php echo htmlspecialchars($place['memo'], ENT_QUOTES, 'UTF-8'); ?></p>
         <p>訪問済み: <?php echo $place['visited_flag'] ? 'はい' : 'いいえ'; ?></p>

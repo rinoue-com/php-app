@@ -14,7 +14,7 @@ try {
 }
 
 // データ取得
-$sql = 'SELECT id, place_name, start_date, end_date, visited_flag FROM memo_places';
+$sql = 'SELECT id, place_name, location, start_date, undecided, visited_flag, related_url FROM memo_places';
 $stmt = $pdo->query($sql);
 $places = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -30,25 +30,34 @@ $places = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <h1>行きたい場所一覧</h1>
     <table border="1">
         <tr>
+            <th>イベントの名前</th>
             <th>場所の名前</th>
-            <th>開催期間</th>
+            <th>開始日</th>
             <th>訪問済み</th>
+            <th>参考URL</th>
             <th>詳細</th>
         </tr>
         <?php foreach ($places as $place): ?>
         <tr>
             <td><?php echo htmlspecialchars($place['place_name'], ENT_QUOTES, 'UTF-8'); ?></td>
+            <td><?php echo htmlspecialchars($place['location'], ENT_QUOTES, 'UTF-8'); ?></td>
             <td>
                 <?php
-                if ($place['start_date'] && $place['end_date']) {
-                    echo htmlspecialchars($place['start_date'], ENT_QUOTES, 'UTF-8') . ' ～ ' .
-                         htmlspecialchars($place['end_date'], ENT_QUOTES, 'UTF-8');
+                if ($place['undecided'] == 1) {
+                    echo '未定';
+                } elseif ($place['start_date']) {
+                    echo htmlspecialchars(date('Y-m-d', strtotime($place['start_date'])), ENT_QUOTES, 'UTF-8'); // 時刻を除外
                 } else {
                     echo '未定';
                 }
                 ?>
             </td>
-            <td><?php echo $place['visited_flag'] ? 'はい' : 'いいえ'; ?></td>
+            <td><?php echo $place['visited_flag'] == 1 ? '済' : ''; ?></td>
+            <td>
+                <?php if (!empty($place['related_url'])): ?>
+                    <a href="<?php echo htmlspecialchars($place['related_url'], ENT_QUOTES, 'UTF-8'); ?>" target="_blank">リンク</a>
+                <?php endif; ?>
+            </td>
             <td><a href="detail.php?id=<?php echo $place['id']; ?>">詳細を見る</a></td>
         </tr>
         <?php endforeach; ?>
