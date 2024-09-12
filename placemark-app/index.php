@@ -4,6 +4,7 @@ include 'config_db.php';
 
 // 削除処理のステータスを取得
 $deleteStatus = isset($_GET['delete_status']) ? $_GET['delete_status'] : null;
+$registerStatus = isset($_GET['register_status']) ? $_GET['register_status'] : null;
 
 // 検索キーワードとフィルタの取得
 $searchKeyword = isset($_GET['search']) ? $_GET['search'] : '';
@@ -75,25 +76,32 @@ $places = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script>
         $(document).ready(function() {
             var deleteStatus = "<?php echo $deleteStatus; ?>";
+            var registerStatus = "<?php echo $registerStatus; ?>";
             var messageElement = $('#status-message');
-            
+
             if (deleteStatus === "success") {
                 messageElement.text("削除に成功しました。");
                 messageElement.removeClass('error');
-                messageElement.fadeIn(); // メッセージをフェードイン
+                messageElement.fadeIn();
             } else if (deleteStatus === "failure") {
                 messageElement.text("削除に失敗しました。");
                 messageElement.addClass('error');
-                messageElement.fadeIn(); // メッセージをフェードイン
+                messageElement.fadeIn();
+            }
+
+            if (registerStatus === "success") {
+                messageElement.text("登録が完了しました。");
+                messageElement.removeClass('error');
+                messageElement.fadeIn();
             }
 
             // 3秒後にメッセージをフェードアウトさせる
             setTimeout(function() {
-                messageElement.fadeOut(1000); // 1秒かけてフェードアウト
+                messageElement.fadeOut(1000);
             }, 3000);
 
             // クエリパラメータを削除してリロード時にメッセージが再表示されないようにする
-            if (deleteStatus) {
+            if (deleteStatus || registerStatus) {
                 var newUrl = window.location.href.split('?')[0]; // クエリを削除したURL
                 window.history.replaceState(null, null, newUrl); // URLをクエリなしに更新
             }
