@@ -54,20 +54,57 @@ $places = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <title>行きたい場所一覧</title>
     <link rel="stylesheet" href="style.css"> <!-- CSSの読み込み -->
+    <style>
+        /* メッセージ表示用のスタイル */
+        .status-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #3498db; /* ブルーの色合い */
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: none; /* 初期は非表示 */
+        }
+        .status-message.error {
+            background-color: #e74c3c; /* エラーメッセージ用の赤色 */
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // 削除ステータスに基づいてアラートを表示
-        window.onload = function() {
+        $(document).ready(function() {
             var deleteStatus = "<?php echo $deleteStatus; ?>";
+            var messageElement = $('#status-message');
+            
             if (deleteStatus === "success") {
-                alert("削除に成功しました。");
+                messageElement.text("削除に成功しました。");
+                messageElement.removeClass('error');
+                messageElement.fadeIn(); // メッセージをフェードイン
             } else if (deleteStatus === "failure") {
-                alert("削除に失敗しました。");
+                messageElement.text("削除に失敗しました。");
+                messageElement.addClass('error');
+                messageElement.fadeIn(); // メッセージをフェードイン
             }
-        };
+
+            // 3秒後にメッセージをフェードアウトさせる
+            setTimeout(function() {
+                messageElement.fadeOut(1000); // 1秒かけてフェードアウト
+            }, 3000);
+
+            // クエリパラメータを削除してリロード時にメッセージが再表示されないようにする
+            if (deleteStatus) {
+                var newUrl = window.location.href.split('?')[0]; // クエリを削除したURL
+                window.history.replaceState(null, null, newUrl); // URLをクエリなしに更新
+            }
+        });
     </script>
 </head>
 <body>
     <h1>行きたい場所一覧</h1>
+
+    <!-- ステータスメッセージ -->
+    <div id="status-message" class="status-message"></div>
 
     <div class="search-filter-container">
         <!-- 検索フォーム -->
