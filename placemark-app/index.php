@@ -2,16 +2,8 @@
 // config_db.phpをインクルードして、データベース接続情報を取得
 include 'config_db.php';
 
-// 削除処理
-if (isset($_GET['delete'])) {
-    $deleteId = (int)$_GET['delete'];
-    $deleteSql = "DELETE FROM memo_places WHERE id = :id";
-    $deleteStmt = $pdo->prepare($deleteSql);
-    $deleteStmt->bindValue(':id', $deleteId, PDO::PARAM_INT);
-    $deleteStmt->execute();
-    header("Location: index.php"); // 削除後にリダイレクトしてページを更新
-    exit;
-}
+// 削除処理のステータスを取得
+$deleteStatus = isset($_GET['delete_status']) ? $_GET['delete_status'] : null;
 
 // 検索キーワードとフィルタの取得
 $searchKeyword = isset($_GET['search']) ? $_GET['search'] : '';
@@ -29,22 +21,16 @@ if (isset($_GET['clear'])) {
 // SQLクエリの準備
 $sql = 'SELECT id, place_name, location, start_date, end_date, undecided, visited_flag, related_url FROM memo_places WHERE (place_name LIKE :search OR location LIKE :search)';
 
-// 未定のものを除外するフィルタ
+// フィルタ処理
 if ($showUndecided == 0) {
     $sql .= ' AND undecided = 0';
 }
-
-// 訪問済みフィルタ
 if ($showVisited == 1) {
     $sql .= ' AND visited_flag = 1';
 }
-
-// 過去のイベントフィルタ
 if ($showPastEvents == 0) {
     $sql .= ' AND (end_date IS NULL OR end_date >= NOW())';
 }
-
-// 開始日の範囲フィルタ（指定された日付以前の開始日を取得）
 if (!empty($startDateRange)) {
     $sql .= ' AND start_date <= :start_date_range';
 }
@@ -68,6 +54,17 @@ $places = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <title>行きたい場所一覧</title>
     <link rel="stylesheet" href="style.css"> <!-- CSSの読み込み -->
+    <script>
+        // 削除ステータスに基づいてアラートを表示
+        window.onload = function() {
+            var deleteStatus = "<?php echo $deleteStatus; ?>";
+            if (deleteStatus === "success") {
+                alert("削除に成功しました。");
+            } else if (deleteStatus === "failure") {
+                alert("削除に失敗しました。");
+            }
+        };
+    </script>
 </head>
 <body>
     <h1>行きたい場所一覧</h1>
@@ -154,7 +151,7 @@ $places = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php endif; ?>
                 </td>
                 <td><a href="detail.php?id=<?php echo $place['id']; ?>">詳細を見る</a></td>
-                <td><a href="index.php?delete=<?php echo $place['id']; ?>" onclick="return confirm('本当に削除しますか？')">削除</a></td>
+                <td><a href="delete.php?id=<?php echo $place['id']; ?>" onclick="return confirm('本当に削除しますか？')">削除</a></td>
             </tr>
             <?php endforeach; ?>
         <?php else: ?>

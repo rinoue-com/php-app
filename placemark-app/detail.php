@@ -13,16 +13,6 @@ if ($id <= 0) {
     exit;
 }
 
-// 削除処理
-if (isset($_GET['delete'])) {
-    $deleteSql = "DELETE FROM memo_places WHERE id = :id";
-    $deleteStmt = $pdo->prepare($deleteSql);
-    $deleteStmt->bindValue(':id', $id, PDO::PARAM_INT);
-    $deleteStmt->execute();
-    header("Location: list.php"); // 削除後にリスト画面へリダイレクト
-    exit;
-}
-
 // 詳細データ取得
 $sql = 'SELECT * FROM memo_places WHERE id = :id';
 $stmt = $pdo->prepare($sql);
@@ -81,10 +71,10 @@ $hasLocation = !empty($place['latitude']) && !empty($place['longitude']);
         </p>
         <p>登録日時: <?php echo htmlspecialchars($place['created_at'], ENT_QUOTES, 'UTF-8'); ?></p>
 
-        <!-- 削除ボタンの追加 -->
-        <p><a href="detail.php?id=<?php echo $id; ?>&delete=1" onclick="return confirm('本当に削除しますか？')">このイベントを削除</a></p>
+        <!-- 削除ボタンの変更 -->
+        <p><a href="delete.php?id=<?php echo $id; ?>" onclick="return confirm('本当に削除しますか？')">このイベントを削除</a></p>
 
-        <a href="list.php">一覧に戻る</a>
+        <a href="index.php">一覧に戻る</a>
     </div>
 
     <!-- マップ表示用スクリプト (位置情報がある場合のみ) -->
