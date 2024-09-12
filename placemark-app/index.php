@@ -61,7 +61,7 @@ $places = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <title>行きたい場所一覧</title>
-    <link rel="stylesheet" href="style.css"> <!-- 外部CSSファイルを読み込む -->
+    <link rel="stylesheet" href="style.css"> <!-- CSSの読み込み -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
@@ -111,21 +111,16 @@ $places = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- ステータスメッセージ -->
     <div id="status-message" class="status-message"></div>
 
-    <!-- 検索フォーム -->
+    <!-- 統合された検索フォームとフィルタフォーム -->
     <div class="search-filter-container">
-        <div class="search-container">
-            <form method="GET" action="index.php" class="search-form">
+        <form method="GET" action="index.php" class="search-form">
+            <!-- 検索フォーム部分 -->
+            <div class="search-container">
                 <input type="text" name="search" placeholder="イベント名や場所名で検索" value="<?php echo htmlspecialchars($searchKeyword, ENT_QUOTES, 'UTF-8'); ?>" class="search-input">
-                <div class="search-buttons">
-                    <button type="submit" class="search-button">検索</button>
-                    <button type="submit" name="clear" value="1" class="clear-button">クリア</button>
-                </div>
-            </form>
-        </div>
+            </div>
 
-        <!-- フィルタオプション -->
-        <div class="filter-container">
-            <form method="GET" action="index.php">
+            <!-- フィルタオプション -->
+            <div class="filter-container">
                 <label>
                     <input type="checkbox" name="undecided" <?php echo $showUndecided ? 'checked' : ''; ?>> 未定
                 </label>
@@ -139,9 +134,14 @@ $places = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     開始日の範囲:
                     <input type="date" name="start_date_range" value="<?php echo htmlspecialchars($startDateRange, ENT_QUOTES, 'UTF-8'); ?>">
                 </label>
-                <button type="submit" class="filter-button">フィルタ適用</button>
-            </form>
-        </div>
+            </div>
+
+            <!-- 検索ボタンとクリアボタン -->
+            <div class="search-buttons">
+                <button type="submit" class="search-button">検索</button>
+                <button type="submit" name="clear" value="1" class="clear-button">クリア</button>
+            </div>
+        </form>
     </div>
 
     <div style="margin-bottom: 20px;">
@@ -157,7 +157,7 @@ $places = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <th>訪問済み</th>
             <th>参考URL</th>
             <th>詳細</th>
-            <th>編集</th> <!-- 編集の列 -->
+            <th>編集</th>
             <th>削除</th>
         </tr>
         <?php if (!empty($places)): ?>
@@ -193,9 +193,9 @@ $places = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <a href="<?php echo htmlspecialchars($place['related_url'], ENT_QUOTES, 'UTF-8'); ?>" target="_blank">リンク</a>
                     <?php endif; ?>
                 </td>
-                <td><a href="detail.php?id=<?php echo $place['id']; ?>">詳細</a></td> <!-- 「詳細を見る」から「詳細」に変更 -->
-                <td><a href="edit.php?id=<?php echo $place['id']; ?>">📝</a></td> <!-- 編集リンク -->
-                <td><a href="delete.php?id=<?php echo $place['id']; ?>" onclick="return confirm('本当に削除しますか？')">🚮</a></td> <!-- 削除リンク -->
+                <td><a href="detail.php?id=<?php echo $place['id']; ?>">詳細</a></td>
+                <td><a href="edit.php?id=<?php echo $place['id']; ?>">📝</a></td>
+                <td><a href="delete.php?id=<?php echo $place['id']; ?>" onclick="return confirm('本当に削除しますか？')">🚮</a></td>
             </tr>
             <?php endforeach; ?>
         <?php else: ?>
