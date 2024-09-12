@@ -6,3 +6,4 @@ bookmark-app/config_db_local.php
 placemark-app/config_db.php
 placemark-app/config.php
 placemark-app/config_db_local.php
+placemark-app/config_db_sakura.php
