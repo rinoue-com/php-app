@@ -71,10 +71,14 @@ $hasLocation = !empty($place['latitude']) && !empty($place['longitude']);
         </p>
         <p>登録日時: <?php echo htmlspecialchars($place['created_at'], ENT_QUOTES, 'UTF-8'); ?></p>
 
-        <!-- 削除ボタンの変更 -->
-        <p><a href="delete.php?id=<?php echo $id; ?>" onclick="return confirm('本当に削除しますか？')">このイベントを削除</a></p>
+        <!-- 編集ボタンと削除ボタン -->
+        <p>
+            <a href="edit.php?id=<?php echo $id; ?>" class="btn btn-edit">編集</a> <!-- 編集ボタン -->
+            <a href="delete.php?id=<?php echo $id; ?>" class="btn btn-delete" onclick="return confirm('本当に削除しますか？')">削除</a> <!-- 削除ボタン -->
+        </p>
 
-        <a href="index.php">一覧に戻る</a>
+        <!-- 一覧に戻るボタン -->
+        <p><a href="index.php" class="btn-back">一覧に戻る</a></p> <!-- 新たにスタイルを適用したボタン -->
     </div>
 
     <!-- マップ表示用スクリプト (位置情報がある場合のみ) -->

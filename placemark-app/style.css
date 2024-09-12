@@ -29,7 +29,6 @@ label {
 
 input[type="text"],
 input[type="url"],
-input[type="datetime-local"],
 input[type="date"],
 textarea {
     width: 100%;
@@ -72,43 +71,62 @@ button:hover {
     background-color: #e0e0e0; /* 地図がロードされる前の背景 */
 }
 
-.datetime-group {
-    display: flex;
+/* 編集ボタンのスタイル */
+.btn-edit {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-align: center;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    margin-right: 10px;
 }
 
-.datetime-group div {
-    margin-right: 20px; /* 開始日時と終了日時の間に適切な余白 */
+.btn-edit:hover {
+    background-color: #0056b3;
 }
 
-.datetime-group div:last-child {
-    margin-right: 0; /* 最後の要素の余白をリセット */
+/* 削除ボタンのスタイル */
+.btn-delete {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-align: center;
+    color: #fff;
+    background-color: #dc3545;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
 }
 
-input[disabled] {
-    background-color: #e0e0e0;
-    cursor: not-allowed;
+.btn-delete:hover {
+    background-color: #c82333;
 }
 
-@media (max-width: 600px) {
-    form, .detail-page {
-        padding: 15px;
-    }
-
-    button {
-        padding: 12px;
-    }
-
-    .datetime-group {
-        flex-direction: column;
-    }
-
-    .datetime-group input {
-        width: 100%;
-        margin-bottom: 10px;
-    }
+/* 一覧に戻るボタンの個別スタイル */
+.btn-back {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-align: center;
+    color: #fff;
+    background-color: #6c757d;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
 }
 
-/* 一覧表示・詳細表示のスタイル */
+.btn-back:hover {
+    background-color: #5a6268;
+}
+
+/* テーブルのスタイル */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -151,18 +169,22 @@ table tr:hover {
     margin: 10px 0;
 }
 
-.detail-page a {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    text-decoration: none;
+/* ステータスメッセージ */
+.status-message {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px;
+    background-color: #28a745;
+    color: #fff;
     border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
 }
 
-.detail-page a:hover {
-    background-color: #45a049;
+.status-message.error {
+    background-color: #dc3545;
 }
 
 /* 検索フォームとフィルタをまとめるコンテナ */
@@ -269,7 +291,7 @@ table tr:hover {
 }
 
 /* 新規追加ボタン */
-.btn {
+.btn-primary {
     display: inline-block;
     padding: 10px 20px;
     font-size: 16px;
@@ -282,7 +304,7 @@ table tr:hover {
     cursor: pointer;
 }
 
-.btn:hover {
+.btn-primary:hover {
     background-color: #0056b3;
 }
 
@@ -294,21 +316,4 @@ a {
 
 a:hover {
     text-decoration: underline;
-}
-
-/* メッセージ表示用のスタイル */
-.status-message {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: #3498db; /* ブルーの色合い */
-    color: white;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    display: none; /* 初期は非表示 */
-}
-
-.status-message.error {
-    background-color: #e74c3c; /* エラーメッセージ用の赤色 */
 }
