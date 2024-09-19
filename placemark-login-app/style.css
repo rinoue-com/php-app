@@ -1,0 +1,319 @@
+/* 全体のスタイル */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+form, .detail-page {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-top: 15px;
+    color: #555;
+}
+
+input[type="text"],
+input[type="url"],
+input[type="date"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type="checkbox"] {
+    margin-top: 10px;
+}
+
+textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Mapのスタイル */
+#map {
+    width: 100%;
+    height: 400px; /* 地図の高さを指定 */
+    background-color: #e0e0e0; /* 地図がロードされる前の背景 */
+}
+
+/* 編集ボタンのスタイル */
+.btn-edit {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-align: center;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.btn-edit:hover {
+    background-color: #0056b3;
+}
+
+/* 削除ボタンのスタイル */
+.btn-delete {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-align: center;
+    color: #fff;
+    background-color: #dc3545;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-delete:hover {
+    background-color: #c82333;
+}
+
+/* 一覧に戻るボタンの個別スタイル */
+.btn-back {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-align: center;
+    color: #fff;
+    background-color: #6c757d;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-back:hover {
+    background-color: #5a6268;
+}
+
+/* テーブルのスタイル */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+table th, table td {
+    padding: 12px 15px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+table th {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+}
+
+table td a {
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+table td a:hover {
+    text-decoration: underline;
+}
+
+table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table tr:hover {
+    background-color: #e9e9e9;
+}
+
+/* 詳細ページのスタイル */
+.detail-page p {
+    margin: 10px 0;
+}
+
+/* ステータスメッセージ */
+.status-message {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px;
+    background-color: #28a745;
+    color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.status-message.error {
+    background-color: #dc3545;
+}
+
+/* 検索フォームとフィルタをまとめるコンテナ */
+.search-filter-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+/* 左の検索コンテナ */
+.search-container,
+.filter-container {
+    flex: 1; /* 画面幅の50%を使う */
+    padding: 0 10px; /* 左右に余白 */
+}
+
+/* 検索フォーム */
+.search-form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* 検索入力欄のスタイル */
+.search-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+/* ボタンを入力欄の下に配置 */
+.search-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* 検索ボタンとクリアボタン */
+.search-button, .clear-button {
+    width: 48%;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* 検索ボタンのスタイル */
+.search-button {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.search-button:hover {
+    background-color: #45a049;
+}
+
+/* クリアボタンのスタイル */
+.clear-button {
+    background-color: #f44336;
+    color: white;
+}
+
+.clear-button:hover {
+    background-color: #d32f2f;
+}
+
+/* フィルタオプション */
+.filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* 各フィルタオプションのスタイル */
+.filter-container label {
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+/* チェックボックスと日付フィルタ */
+.filter-container input[type="checkbox"],
+.filter-container input[type="date"] {
+    margin-right: 5px;
+}
+
+/* フィルタ適用ボタン */
+.filter-button {
+    padding: 10px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.filter-button:hover {
+    background-color: #1976D2;
+}
+
+/* 新規追加ボタン */
+.btn-primary {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-align: center;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* リンクのスタイル */
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
