@@ -1,4 +1,8 @@
 <?php
+//エラー表示
+ini_set("display_errors", 1);
+
+session_start();
 include 'funcs.php'; // funcs.php をインクルードしてログイン状態を確認する関数を使用
 sschk(); // ログイン状態の確認
 
@@ -17,6 +21,8 @@ $showVisited = isset($_GET['visited']) ? 1 : 0;
 $showPastEvents = isset($_GET['past_events']) ? 1 : 0;
 $startDateRange = isset($_GET['start_date_range']) ? $_GET['start_date_range'] : '';
 
+$user_id = $_SESSION['user_id'];
+
 // クリアボタンが押された場合、検索文字列をリセット
 if (isset($_GET['clear'])) {
     header("Location: index.php"); // クエリパラメータを削除してリダイレクト
@@ -24,7 +30,7 @@ if (isset($_GET['clear'])) {
 }
 
 // SQLクエリの準備
-$sql = 'SELECT id, place_name, location, start_date, end_date, undecided, visited_flag, related_url FROM memo_places WHERE (place_name LIKE :search OR location LIKE :search)';
+$sql = 'SELECT id, place_name, location, start_date, end_date, undecided, visited_flag, related_url FROM memo_places WHERE (place_name LIKE :search OR location LIKE :search) AND user_id = :user_id';
 
 // 未定のものを除外するフィルタ
 if ($showUndecided == 0) {
@@ -53,6 +59,8 @@ $stmt->bindValue(':search', $searchParam, PDO::PARAM_STR);
 if (!empty($startDateRange)) {
     $stmt->bindValue(':start_date_range', $startDateRange, PDO::PARAM_STR);
 }
+
+$stmt->bindValue(':user_id', $user_id, PDO::PARAM_STR);
 
 // SQL実行
 $stmt->execute();
@@ -113,6 +121,10 @@ $places = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <!-- ステータスメッセージ -->
     <div id="status-message" class="status-message"></div>
+    <!-- ログアウトボタン -->
+    <div style="text-align: right;">
+        <a href="logout.php" class="logout-button">ログアウト</a>
+    </div>
 
     <!-- 統合された検索フォームとフィルタフォーム -->
     <div class="search-filter-container">

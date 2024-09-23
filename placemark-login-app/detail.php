@@ -11,15 +11,19 @@ include 'config_db.php';
 // GETパラメータからIDを取得
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
+// ログイン中のユーザーIDを取得
+$user_id = $_SESSION['user_id'];
+
 if ($id <= 0) {
     echo '無効なIDです。';
     exit;
 }
 
 // 詳細データ取得
-$sql = 'SELECT * FROM memo_places WHERE id = :id';
+$sql = 'SELECT * FROM memo_places WHERE id = :id AND user_id = :user_id';
 $stmt = $pdo->prepare($sql);
 $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+$stmt->bindValue(':user_id', $user_id, PDO::PARAM_STR);
 $stmt->execute();
 $place = $stmt->fetch(PDO::FETCH_ASSOC);
 

@@ -11,9 +11,10 @@ $deleteSuccess = false;
 
 if ($id > 0) {
     // 削除処理
-    $deleteSql = "DELETE FROM memo_places WHERE id = :id";
+    $deleteSql = "DELETE FROM memo_places WHERE id = :id AND user_id = :user_id";
     $deleteStmt = $pdo->prepare($deleteSql);
     $deleteStmt->bindValue(':id', $id, PDO::PARAM_INT);
+    $deleteStmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_STR);
     if ($deleteStmt->execute()) {
         $deleteSuccess = true;
     }

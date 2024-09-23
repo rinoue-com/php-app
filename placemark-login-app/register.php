@@ -1,4 +1,6 @@
 <?php
+include 'funcs.php'; // funcs.php をインクルードしてログイン状態を確認する関数を使用
+sschk(); // セッションチェック関数を実行
 // config_db.phpをインクルードして、データベース接続情報を取得
 include 'config_db.php';
 
@@ -19,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_id = $_SESSION['user_id']; // ログインしているユーザーのIDを取得
 
     // SQLインサート文の準備
-    $sql = "INSERT INTO memo_places (place_name, location, latitude, longitude, start_date, end_date, undecided, related_url, memo, visited_flag, visited_date, user_id))
+    $sql = "INSERT INTO memo_places (place_name, location, latitude, longitude, start_date, end_date, undecided, related_url, memo, visited_flag, visited_date, user_id)
             VALUES (:place_name, :location, :latitude, :longitude, :start_date, :end_date, :undecided, :related_url, :memo, :visited_flag, :visited_date, :user_id)";
     $stmt = $pdo->prepare($sql);
 

@@ -79,9 +79,10 @@ if (empty($fields)) {
 }
 
 // 動的にUPDATEクエリを生成
-$sql = "UPDATE memo_places SET " . implode(', ', $fields) . " WHERE id = :id";
+$sql = "UPDATE memo_places SET " . implode(', ', $fields) . " WHERE id = :id AND user_id = :user_id";
 $stmt = $pdo->prepare($sql);
 $params[':id'] = $id;
+$params[':user_id'] = $_SESSION['user_id'];
 
 // クエリの実行
 if ($stmt->execute($params)) {
