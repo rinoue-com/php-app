@@ -1,4 +1,7 @@
 <?php
+include 'funcs.php'; // funcs.php をインクルードしてログイン状態を確認する関数を使用
+sschk(); // ログイン状態の確認
+
 // config.phpをインクルードしてAPIキーを取得
 include 'config.php';
 

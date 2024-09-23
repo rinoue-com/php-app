@@ -16,10 +16,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $memo = isset($_POST['memo']) ? $_POST['memo'] : '';
     $visited_flag = isset($_POST['visited_flag']) ? (int)$_POST['visited_flag'] : 0;
     $visited_date = !empty($_POST['visited_date']) ? $_POST['visited_date'] . ' 00:00:00' : null;
+    $user_id = $_SESSION['user_id']; // ログインしているユーザーのIDを取得
 
     // SQLインサート文の準備
-    $sql = "INSERT INTO memo_places (place_name, location, latitude, longitude, start_date, end_date, undecided, related_url, memo, visited_flag, visited_date)
-            VALUES (:place_name, :location, :latitude, :longitude, :start_date, :end_date, :undecided, :related_url, :memo, :visited_flag, :visited_date)";
+    $sql = "INSERT INTO memo_places (place_name, location, latitude, longitude, start_date, end_date, undecided, related_url, memo, visited_flag, visited_date, user_id))
+            VALUES (:place_name, :location, :latitude, :longitude, :start_date, :end_date, :undecided, :related_url, :memo, :visited_flag, :visited_date, :user_id)";
     $stmt = $pdo->prepare($sql);
 
     // バインド処理をコンパクトに
@@ -34,6 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bindValue(':related_url', $related_url, PDO::PARAM_STR);
     $stmt->bindValue(':memo', $memo, PDO::PARAM_STR);
     $stmt->bindValue(':visited_flag', $visited_flag, PDO::PARAM_INT);
+    $stmt->bindValue(':user_id', $user_id, PDO::PARAM_STR); // ログインしているユーザーのIDを保存
+
 
     // データを実行して保存
     if ($stmt->execute()) {
