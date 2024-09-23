@@ -14,6 +14,6 @@ if (isset($_COOKIE[session_name()])) {
 session_destroy();
 
 // 処理後、login.phpへリダイレクト
-header("Location: login.php");
+header("Location: login.php?status=loggedout");
 exit();
 ?>

@@ -61,6 +61,8 @@ if (!empty($startDateRange)) {
 }
 
 $stmt->bindValue(':user_id', $user_id, PDO::PARAM_STR);
+// ログイン中のユーザー名を取得
+$username = isset($_SESSION['username']) ? $_SESSION['username'] : 'ゲスト';
 
 // SQL実行
 $stmt->execute();
@@ -121,8 +123,9 @@ $places = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <!-- ステータスメッセージ -->
     <div id="status-message" class="status-message"></div>
-    <!-- ログアウトボタン -->
-    <div style="text-align: right;">
+     <!-- ユーザー名とログアウトボタンを表示するバー -->
+     <div class="header-bar">
+        <div class="username">こんにちは、<?php echo htmlspecialchars($username, ENT_QUOTES, 'UTF-8'); ?>さん</div>
         <a href="logout.php" class="logout-button">ログアウト</a>
     </div>
 
