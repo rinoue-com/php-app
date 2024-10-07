@@ -12,3 +12,7 @@ placemark-login-app/config.php
 placemark-login-app/config_db.php
 placemark-login-app/config_db_sakura.php
 placemark-login-app/config_sakura.php
+custom-genai-app/config_db_sakura.php
+custom-genai-app/config.php
+custom-genai-app/db_config.php
+/custom-genai-app/uploads
